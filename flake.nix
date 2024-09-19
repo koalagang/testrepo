@@ -32,7 +32,7 @@
     rose-pine-hyprcursor.url = "github:ndom91/rose-pine-hyprcursor";
   };
 
-  outputs = inputs@{ nixpkgs, home-manager, ... }: {
+  outputs = inputs@{ nixpkgs, home-manager, self, ... }: {
     packages.x86_64-linux.my-script = with nixpkgs.legacypackages.x86_64-linux; stdenv.mkderivation {
       pname = "my-script";
       version = "1.0";

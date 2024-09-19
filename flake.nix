@@ -33,13 +33,13 @@
   };
 
   outputs = inputs@{ nixpkgs, home-manager, self, ... }: {
-    packages.x86_64-linux.my-script = with nixpkgs.legacyPackages.x86_64-linux; stdenv.mkderivation {
+    packages.x86_64-linux.my-script = with nixpkgs.legacyPackages.x86_64-linux; stdenv.mkDerivation {
       pname = "my-script";
       version = "1.0";
 
       src = ./.;  # this assumes your script is in the root of the repository
 
-      buildphase = ''
+      buildPhase = ''
         mkdir -p $out/bin
         cp myscript.sh $out/bin/myscript  # replace 'myscript.sh' with your script's filename
         chmod +x $out/bin/myscript
@@ -48,7 +48,7 @@
       # optionally, you can define an install phase if needed
     };
 
-    defaultpackage.x86_64-linux = self.packages.x86_64-linux.my-script;
+    defaultPackage.x86_64-linux = self.packages.x86_64-linux.my-script;
     # define a default app to run
     apps.x86_64-linux.default = {
       type = "app";

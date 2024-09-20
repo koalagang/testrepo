@@ -48,6 +48,7 @@
       version = "1.0";
       dontConfigure = true;
       dontInstall = true;
+      dontFixup = true;
       src = ./.;
       buildInputs = [
         git

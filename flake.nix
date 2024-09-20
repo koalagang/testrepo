@@ -47,6 +47,7 @@
       pname = "install";
       version = "1.0";
       dontConfigure = true;
+      dontInstall = true;
       src = ./.;
       buildInputs = [
         git

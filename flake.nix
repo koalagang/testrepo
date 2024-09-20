@@ -14,6 +14,13 @@
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
 
+    disko = {
+      url = "github:nix-community/disko";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    impermanence.url = "github:nix-community/impermanence";
+
     home-manager = {
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -32,29 +39,35 @@
     rose-pine-hyprcursor.url = "github:ndom91/rose-pine-hyprcursor";
   };
 
-  outputs = inputs@{ nixpkgs, home-manager, self, ... }: {
+  outputs = inputs@{ self, nixpkgs, home-manager, ... }: {
+    # install script
+    # this enables us to deploy the configuration onto a new system using
+    # nix run github:koalagang/kudos --no-write-lock-file
     packages.x86_64-linux.my-script = with nixpkgs.legacyPackages.x86_64-linux; stdenv.mkDerivation {
-      pname = "my-script";
+      pname = "install";
       version = "1.0";
-
-      src = ./.;  # this assumes your script is in the root of the repository
-
+      dontConfigure = true;
+      src = ./.;
+      buildInputs = [
+        git
+        coreutils
+        diffutils
+        mkpasswd
+        toybox
+      ];
       buildPhase = ''
         mkdir -p $out/bin
-        cp myscript.sh $out/bin/myscript  # replace 'myscript.sh' with your script's filename
-        chmod +x $out/bin/myscript
+        cp install.sh $out/bin/install
+        chmod +x $out/bin/install
       '';
-
-      # optionally, you can define an install phase if needed
     };
-
-    defaultPackage.x86_64-linux = self.packages.x86_64-linux.my-script;
-    # define a default app to run
+    defaultPackage.x86_64-linux = self.packages.x86_64-linux.install;
     apps.x86_64-linux.default = {
       type = "app";
-      program = "${self.packages.x86_64-linux.my-script}/bin/myscript";  # adjust as necessary
+      program = "${self.packages.x86_64-linux.my-script}/bin/install";
     };
 
+    # the actual configuration that is used when running nixos-install or nixos-rebuild
     nixosConfigurations = {
       Myla = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
